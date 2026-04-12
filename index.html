@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<!-- saved from url=(0104)file:///C:/Users/aytec/Downloads/%EC%A4%91%EB%B3%B5%ED%98%84%EC%9E%A5_%ED%83%90%EC%A7%80%EA%B8%B0_7.html -->
+<html lang="ko"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>중복 현장 탐지기 | LG전자 설계팀</title>
+<script src="./index_files/xlsx.full.min.js.다운로드"></script>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: #f4f5f8;
+  color: #1a1d27;
+  font-size: 14px;
+  line-height: 1.5;
+  min-height: 100vh;
+}
+
+/* ── 헤더 (sticky 제거 - tbody 첫 행 겹침 방지) ── */
+.hd {
+  background: #fff;
+  border-bottom: 1px solid #e2e5ed;
+  padding: 0 1.5rem;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+}
+.hd-logo {
+  width: 30px; height: 30px;
+  background: #c40000;
+  border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  color: #fff; font-size: 13px; font-weight: 700;
+}
+.hd-title { font-size: 15px; font-weight: 600; }
+.hd-sub { font-size: 12px; color: #9ca3af; margin-left: auto; }
+
+/* ── 레이아웃 ── */
+.wrap { max-width: 1300px; margin: 0 auto; padding: 1.25rem; }
+
+/* ── 업로드 ── */
+.upload {
+  border: 2px dashed #d1d5db;
+  border-radius: 10px;
+  padding: 3rem 1.5rem;
+  text-align: center;
+  cursor: pointer;
+  background: #fff;
+  transition: border-color .2s, background .2s;
+}
+.upload:hover, .upload.over { border-color: #c40000; background: #fff5f5; }
+.upload input { display: none; }
+.upload-icon { font-size: 36px; display: block; margin-bottom: .5rem; }
+.upload-title { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
+.upload-sub { font-size: 13px; color: #6b7280; }
+.upload-chip {
+  margin-top: .75rem; display: inline-block;
+  background: #f4f5f8; font-size: 12px; color: #9ca3af;
+  padding: 3px 12px; border-radius: 99px;
+}
+
+/* ── 파일 바 ── */
+.fb {
+  background: #eff6ff; border: 1px solid #bfdbfe;
+  border-radius: 6px; padding: 9px 14px;
+  display: flex; align-items: center; gap: 8px;
+  font-size: 13px; margin-top: 1rem;
+}
+.fb-name { font-weight: 600; color: #1d4ed8; }
+.fb-info { color: #6b7280; }
+.fb-btn {
+  margin-left: auto; padding: 4px 10px;
+  border: 1px solid #bfdbfe; border-radius: 6px;
+  background: #fff; color: #1d4ed8; cursor: pointer;
+  font-size: 12px; font-weight: 500;
+}
+
+/* ── 통계 카드 ── */
+.stats { display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; margin-top: 1rem; }
+.stat {
+  background: #fff; border: 1px solid #e2e5ed;
+  border-radius: 10px; padding: .875rem 1rem;
+}
+.stat-lbl { font-size: 11px; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: .04em; margin-bottom: 5px; }
+.stat-val { font-size: 24px; font-weight: 700; color: #1a1d27; }
+.stat-val.red { color: #c40000; }
+.stat-val.amber { color: #d97706; }
+
+/* ── 공통 카드 ── */
+.card { background: #fff; border: 1px solid #e2e5ed; border-radius: 10px; margin-top: 1rem; overflow: hidden; }
+.card-head { padding: 11px 14px; border-bottom: 1px solid #f0f1f5; font-size: 12px; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: .04em; }
+.card-body { padding: 13px 14px; }
+
+/* ── 기준 체크박스 ── */
+.crits { display: flex; gap: .75rem; flex-wrap: wrap; }
+.crit {
+  display: flex; align-items: center; gap: 7px;
+  padding: 7px 14px; border: 1px solid #e2e5ed;
+  border-radius: 6px; cursor: pointer;
+  font-size: 13px; font-weight: 500; user-select: none;
+  transition: border-color .15s, background .15s;
+}
+.crit:hover { border-color: #c40000; }
+.crit.on { border-color: #c40000; background: #fff5f5; color: #c40000; }
+.crit input { accent-color: #c40000; width: 14px; height: 14px; cursor: pointer; }
+.crit-note { margin-top: 8px; font-size: 12px; color: #9ca3af; }
+/* ── 유사도 슬라이더 ── */
+.sim-row {
+  margin-top: 12px; padding-top: 12px;
+  border-top: 1px solid #f0f1f5;
+  display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+}
+.sim-row label { font-size: 13px; color: #6b7280; white-space: nowrap; }
+.sim-row input[type=range] {
+  flex: 1; min-width: 140px; max-width: 260px;
+  accent-color: #c40000; cursor: pointer;
+}
+.sim-val { font-size: 14px; font-weight: 700; color: #c40000; min-width: 42px; text-align: right; }
+.sim-desc { font-size: 12px; color: #9ca3af; flex-basis: 100%; margin-top: 2px; }
+.b-sim { background: #fce7f3; color: #9d174d; font-size: 10px; }
+
+
+/* ── 필터 바 ── */
+.filters { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.srch { position: relative; flex: 1; min-width: 180px; }
+.srch input {
+  width: 100%; padding: 7px 10px 7px 32px;
+  border: 1px solid #e2e5ed; border-radius: 6px;
+  font-size: 13px; color: #1a1d27; background: #f4f5f8; outline: none;
+}
+.srch input:focus { border-color: #c40000; background: #fff; }
+.srch-ico { position: absolute; left: 9px; top: 50%; transform: translateY(-50%); font-size: 13px; pointer-events: none; }
+.sel select {
+  padding: 7px 10px; border: 1px solid #e2e5ed; border-radius: 6px;
+  font-size: 13px; color: #1a1d27; background: #f4f5f8; cursor: pointer; outline: none;
+}
+.exp-btn {
+  padding: 7px 14px; border: 1px solid #e2e5ed; border-radius: 6px;
+  background: #fff; color: #1a1d27; font-size: 13px; font-weight: 500;
+  cursor: pointer; white-space: nowrap; margin-left: auto;
+}
+.exp-btn:hover { background: #f4f5f8; }
+
+/* ── 탭 ── */
+.tabs { display: flex; border-bottom: 1px solid #e2e5ed; padding: 0 1rem; }
+.tab { padding: 10px 16px; font-size: 13px; font-weight: 500; color: #6b7280; cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; }
+.tab:hover { color: #1a1d27; }
+.tab.on { color: #c40000; border-bottom-color: #c40000; }
+.tcnt { display: inline-block; background: #f4f5f8; color: #6b7280; border-radius: 99px; font-size: 11px; padding: 1px 6px; margin-left: 4px; }
+.tab.on .tcnt { background: #fee2e2; color: #b91c1c; }
+
+/* ── 테이블 (sticky 제거!) ── */
+.tbl-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+th {
+  padding: 9px 12px; text-align: left; font-weight: 600; font-size: 11px;
+  color: #6b7280; border-bottom: 1px solid #e2e5ed;
+  background: #f9fafb; white-space: nowrap;
+  text-transform: uppercase; letter-spacing: .03em;
+}
+td {
+  padding: 10px 12px; border-bottom: 1px solid #f0f1f5;
+  vertical-align: top; word-break: keep-all; overflow-wrap: break-word;
+}
+tbody tr:last-child td { border-bottom: none; }
+tbody tr:hover td { background: #fafafa; }
+
+/* ── 중복 행 ── */
+tr.dup td { background: #fff8f8; }
+tr.dup:hover td { background: #fff3f3; }
+tr.dup td.nc { border-left: 3px solid #c40000; padding-left: 9px; }
+
+/* ── 그룹 구분 ── */
+tr.gsep td {
+  background: #fef2f2; font-size: 11px; font-weight: 700;
+  color: #c40000; padding: 4px 12px; border-bottom: 1px solid #fecaca;
+}
+
+/* ── 뱃지 ── */
+.badge { display: inline-block; padding: 2px 7px; border-radius: 99px; font-size: 11px; font-weight: 700; white-space: nowrap; line-height: 1.6; }
+.b-dup  { background: #fee2e2; color: #b91c1c; }
+.b-ok   { background: #d1fae5; color: #065f46; }
+.b-grp  { background: #fef3c7; color: #92400e; }
+.b-why  { background: #ede9fe; color: #5b21b6; font-size: 10px; }
+.badge-row { display: flex; flex-wrap: wrap; gap: 3px; margin-top: 3px; }
+
+/* ── 현장명 셀 ── */
+.nm {
+  font-weight: 700;
+  font-size: 13px;
+  color: #1a1d27 !important;
+  line-height: 1.45;
+  word-break: keep-all;
+  overflow-wrap: break-word;
+  display: block;
+}
+.issuer { font-size: 11px; color: #9ca3af; margin-top: 2px; display: block; }
+
+/* ── 금액 ── */
+.amt { font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; display: block; color: #1a1d27; }
+.amt-dc { font-size: 11px; color: #9ca3af; display: block; }
+
+/* ── 주소 ── */
+.addr { font-size: 12px; color: #6b7280; word-break: keep-all; overflow-wrap: break-word; }
+
+/* ── 빈 상태 ── */
+.empty { text-align: center; padding: 3.5rem 1rem; }
+.empty-ico { font-size: 32px; margin-bottom: .5rem; }
+.empty-msg { font-size: 14px; color: #6b7280; }
+
+mark { background: #fef08a; border-radius: 2px; padding: 0 1px; color: inherit; }
+
+@media (max-width: 680px) {
+  .stats { grid-template-columns: repeat(2,1fr); }
+  .wrap { padding: .75rem; }
+}
+</style>
+</head>
+<body>
+
+<header class="hd">
+  <div class="hd-logo">LG</div>
+  <div class="hd-title">중복 현장 탐지기</div>
+  <div class="hd-sub">26년 원단위 · 설계팀 설계반영리스트</div>
+</header>
+
+<div class="wrap">
+
+  <!-- 업로드 -->
+  <div class="upload" id="dz" onclick="document.getElementById(&#39;fi&#39;).click()">
+    <input type="file" id="fi" accept=".xlsx,.xls" onchange="loadFile(this.files[0])">
+    <span class="upload-icon">📂</span>
+    <div class="upload-title">엑셀 파일을 클릭하여 업로드</div>
+    <div class="upload-sub">또는 파일을 드래그 &amp; 드롭</div>
+    <span class="upload-chip">_원단위_프로젝트_설계팀_설계반영리스트_*.xlsx</span>
+  </div>
+
+  <!-- 파일 바 -->
+  <div class="fb" id="fb" style="display:none">
+    <span>📄</span>
+    <span class="fb-name" id="fbName"></span>
+    <span class="fb-info" id="fbInfo"></span>
+    <button class="fb-btn" onclick="doReset()">다른 파일 열기</button>
+  </div>
+
+  <!-- 통계 -->
+  <div class="stats" id="statsBox" style="display:none">
+    <div class="stat"><div class="stat-lbl">전체 현장</div><div class="stat-val" id="sTot">0</div></div>
+    <div class="stat"><div class="stat-lbl">중복 현장 수</div><div class="stat-val red" id="sDup">0</div></div>
+    <div class="stat"><div class="stat-lbl">중복 그룹 수</div><div class="stat-val amber" id="sGrp">0</div></div>
+    <div class="stat"><div class="stat-lbl">중복 금액 합계</div><div class="stat-val red" id="sAmt">-</div></div>
+  </div>
+
+  <!-- 앱 본체 -->
+  <div id="appBox" style="display:none">
+
+    <!-- 기준 -->
+    <div class="card">
+      <div class="card-head">🔍 중복 기준 설정</div>
+      <div class="card-body">
+        <div class="crits">
+          <label class="crit on" id="lName"><input type="checkbox" id="cName" checked=""> 현장명 (완전일치)</label>
+          <label class="crit" id="lFuzz"><input type="checkbox" id="cFuzz">          현장명 (유사일치)</label>
+          <label class="crit on" id="lAddr"><input type="checkbox" id="cAddr" checked=""> 주소</label>
+          <label class="crit" id="lAmt"><input type="checkbox" id="cAmt">          설계반영 금액</label>
+        </div>
+        <div class="sim-row" id="simRow" style="display:none">
+          <label>유사도 임계값</label>
+          <input type="range" id="simSlider" min="50" max="99" value="70" step="1" oninput="onSlider()">
+          <span class="sim-val" id="simVal">70%</span>
+          <span class="sim-desc" id="simDesc">현장명의 단어가 70% 이상 겹치면 중복으로 처리합니다</span>
+        </div>
+        <p class="crit-note">※ 체크한 항목 중 하나라도 조건을 만족하면 중복 처리</p>
+      </div>
+    </div>
+
+    <!-- 필터 -->
+    <div class="card">
+      <div class="card-body">
+        <div class="filters">
+          <div class="srch">
+            <span class="srch-ico">🔎</span>
+            <input type="text" id="qInput" placeholder="현장명, 주소, 마케터 검색..." oninput="render()">
+          </div>
+          <div class="sel">
+            <select id="mktSel" onchange="render()">
+              <option value="">전체 마케터</option>
+            </select>
+          </div>
+          <button class="exp-btn" onclick="doExport()">⬇ 중복 목록 내보내기</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 탭 + 테이블 -->
+    <div class="card" style="overflow:visible">
+      <div class="tabs">
+        <div class="tab on" id="tabDup" onclick="switchTab(&#39;dup&#39;)">중복 현장 <span class="tcnt" id="cntDup">0</span></div>
+        <div class="tab" id="tabAll" onclick="switchTab(&#39;all&#39;)">전체 현장 <span class="tcnt" id="cntAll">0</span></div>
+      </div>
+      <div class="tbl-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th style="width:40px">#</th>
+              <th style="width:130px">상태</th>
+              <th style="min-width:240px">현장명 (건축물명)</th>
+              <th style="width:200px">주소</th>
+              <th style="width:160px">설계반영 금액</th>
+              <th style="width:95px">마케터</th>
+              <th style="width:80px">담당</th>
+              <th style="width:75px">생성월</th>
+            </tr>
+          </thead>
+          <tbody id="tbody"></tbody>
+        </table>
+        <div class="empty" id="emptyBox" style="display:none">
+          <div class="empty-ico">🔍</div>
+          <div class="empty-msg">조건에 맞는 현장이 없습니다.</div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /appBox -->
+</div><!-- /wrap -->
+
+<script>
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// 상태
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+let DATA = [];
+let activeTab = 'dup';
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// 드래그 앤 드롭
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+const dz = document.getElementById('dz');
+dz.addEventListener('dragover',  e => { e.preventDefault(); dz.classList.add('over'); });
+dz.addEventListener('dragleave', ()  => dz.classList.remove('over'));
+dz.addEventListener('drop',      e => { e.preventDefault(); dz.classList.remove('over'); loadFile(e.dataTransfer.files[0]); });
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// 체크박스 이벤트
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+['Name','Fuzz','Addr','Amt'].forEach(k => {
+  const cb = document.getElementById('c' + k);
+  const lb = document.getElementById('l' + k);
+  cb.addEventListener('change', () => {
+    lb.classList.toggle('on', cb.checked);
+    if (k === 'Fuzz') {
+      document.getElementById('simRow').style.display = cb.checked ? 'flex' : 'none';
+    }
+    detect();
+    updateStats();
+    render();
+  });
+});
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// 유틸
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+function stripTeam(s) {
+  // 맨 앞 [팀명] 제거
+  return String(s || '').replace(/^\s*\[.*?\]\s*/, '').trim();
+}
+
+function extractAddr(raw) {
+  if (!raw) return '';
+  // 줄바꿈 정규화: \r\n, \r → \n
+  const s = String(raw).replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+  const m = s.match(/주소\s*[：:]\s*([^\n]+)/);
+  if (!m) return '';
+  const addr = m[1].trim();
+  // "빈 주소" 필터 (숫자·문자 없으면 빈 것으로 처리)
+  return /[가-힣a-zA-Z0-9]/.test(addr) ? addr : '';
+}
+
+function hl(text, q) {
+  if (!q || !text) return String(text || '');
+  const safe = q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  return String(text).replace(new RegExp('(' + safe + ')', 'gi'), '<mark>$1</mark>');
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// 파일 로드
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+function loadFile(file) {
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const wb  = XLSX.read(e.target.result, { type: 'array' });
+      const sn  = wb.SheetNames.find(s => s.includes('26년_원단위'))
+               || wb.SheetNames.find(s => s.includes('26년'))
+               || wb.SheetNames[0];
+      const raw = XLSX.utils.sheet_to_json(wb.Sheets[sn], { header: 1, defval: null });
+      parse(raw, file.name);
+    } catch(err) {
+      alert('파일 읽기 오류: ' + err.message);
+    }
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// 파싱 (헤더 row=2, 데이터 row=3~)
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+function parse(raw, filename) {
+  const mktSet = new Set();
+  DATA = raw.slice(3)
+    .filter(r => r && r[6])
+    .map((r, i) => {
+      const mkt = String(r[7] || '').trim();
+      if (mkt) mktSet.add(mkt);
+      const disp = stripTeam(r[6]);
+      const norm = disp.replace(/\s+/g, ' ');
+      return {
+        idx       : i,
+        displayName: disp,
+        normName  : norm,
+        addr      : extractAddr(r[15]),
+        amt       : r[16] ? Number(r[16]) : null,
+        marketer  : mkt,
+        owner     : String(r[9] || '').trim(),
+        month     : r[1] ? String(r[1]) : '',
+        year      : r[0] ? String(r[0]) : '',
+        issuer    : String(r[2] || '').trim(),
+        dupGroup  : null,
+        reasons   : []
+      };
+    });
+
+  // 마케터 드롭다운
+  const sel = document.getElementById('mktSel');
+  sel.innerHTML = '<option value="">전체 마케터</option>';
+  [...mktSet].sort().forEach(m => {
+    const o = document.createElement('option');
+    o.value = m; o.textContent = m;
+    sel.appendChild(o);
+  });
+
+  // UI 전환
+  dz.style.display = 'none';
+  document.getElementById('fb').style.display = 'flex';
+  document.getElementById('fbName').textContent = filename;
+  document.getElementById('fbInfo').textContent = '· 26년_원단위 · 총 ' + DATA.length.toLocaleString() + '개 현장';
+  document.getElementById('statsBox').style.display = 'grid';
+  document.getElementById('appBox').style.display   = 'block';
+
+  detect();
+  updateStats();
+  render();
+}
+
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// 유사도 함수 (Jaccard - 단어 토큰 기준)
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+function tokenize(s) {
+  // 특수문자 제거 후 단어 분리
+  return s.replace(/[_\-.,()\[\]]/g, ' ').split(/\s+/).filter(w => w.length > 1);
+}
+function jaccardSim(a, b) {
+  const sa = new Set(tokenize(a));
+  const sb = new Set(tokenize(b));
+  if (!sa.size || !sb.size) return 0;
+  let inter = 0;
+  sa.forEach(t => { if (sb.has(t)) inter++; });
+  return inter / (sa.size + sb.size - inter);
+}
+function onSlider() {
+  const v = document.getElementById('simSlider').value;
+  document.getElementById('simVal').textContent = v + '%';
+  document.getElementById('simDesc').textContent =
+    '현장명의 단어가 ' + v + '% 이상 겹치면 중복으로 처리합니다';
+  if (DATA.length) { detect(); updateStats(); render(); }
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// 중복 탐지
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+function detect() {
+  // 초기화
+  DATA.forEach(d => { d.dupGroup = null; d.reasons = []; });
+
+  const useName = document.getElementById('cName').checked;
+  const useFuzz = document.getElementById('cFuzz').checked;
+  const useAddr = document.getElementById('cAddr').checked;
+  const useAmt  = document.getElementById('cAmt').checked;
+  const simThr  = parseFloat(document.getElementById('simSlider').value) / 100;
+
+  let gid = 0;
+
+  for (let i = 0; i < DATA.length; i++) {
+    for (let j = i + 1; j < DATA.length; j++) {
+      const a = DATA[i], b = DATA[j];
+      const why = [];
+      if (useName && a.normName && b.normName && a.normName === b.normName) why.push('현장명');
+      if (useFuzz && a.normName && b.normName && a.normName !== b.normName) {
+        const sim = jaccardSim(a.normName, b.normName);
+        if (sim >= simThr) why.push('유사(' + Math.round(sim*100) + '%)');
+      }
+      if (useAddr && a.addr     && b.addr     && a.addr     === b.addr)     why.push('주소');
+      if (useAmt  && a.amt      && b.amt      && a.amt      === b.amt)      why.push('금액');
+      if (!why.length) continue;
+
+      // 그룹 할당 (병합 포함)
+      let g;
+      if (a.dupGroup !== null && b.dupGroup !== null) {
+        g = a.dupGroup;
+        if (a.dupGroup !== b.dupGroup) {
+          const old = b.dupGroup;
+          DATA.forEach(d => { if (d.dupGroup === old) d.dupGroup = g; });
+        }
+      } else if (a.dupGroup !== null) {
+        g = a.dupGroup;
+      } else if (b.dupGroup !== null) {
+        g = b.dupGroup;
+      } else {
+        g = ++gid;
+      }
+
+      a.dupGroup = g;
+      b.dupGroup = g;
+      why.forEach(w => {
+        if (!a.reasons.includes(w)) a.reasons.push(w);
+        if (!b.reasons.includes(w)) b.reasons.push(w);
+      });
+    }
+  }
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// 통계 업데이트
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+function updateStats() {
+  const dups  = DATA.filter(d => d.dupGroup !== null);
+  const grps  = new Set(dups.map(d => d.dupGroup)).size;
+  const total = dups.reduce((s, d) => s + (d.amt || 0), 0);
+  document.getElementById('sTot').textContent = DATA.length.toLocaleString();
+  document.getElementById('sDup').textContent = dups.length.toLocaleString();
+  document.getElementById('sGrp').textContent = grps.toLocaleString();
+  document.getElementById('sAmt').textContent = total ? Math.round(total / 1e8).toLocaleString() + '억' : '-';
+  document.getElementById('cntDup').textContent = dups.length;
+  document.getElementById('cntAll').textContent = DATA.length;
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// 탭 전환
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+function switchTab(t) {
+  activeTab = t;
+  document.getElementById('tabDup').className = 'tab' + (t === 'dup' ? ' on' : '');
+  document.getElementById('tabAll').className = 'tab' + (t === 'all' ? ' on' : '');
+  render();
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// 렌더
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+function render() {
+  const q       = (document.getElementById('qInput').value || '').toLowerCase().trim();
+  const mkt     = document.getElementById('mktSel').value;
+  const dupOnly = activeTab === 'dup';
+
+  let list = DATA.filter(d => {
+    if (dupOnly && d.dupGroup === null) return false;
+    if (mkt && d.marketer !== mkt) return false;
+    if (q) {
+      const hay = [d.displayName, d.normName, d.addr, d.marketer, d.owner, d.issuer]
+                    .join(' ').toLowerCase();
+      if (!hay.includes(q)) return false;
+    }
+    return true;
+  });
+
+  // 중복탭: 그룹 번호 → 이름 순 정렬
+  if (dupOnly) {
+    list = list.slice().sort((a, b) =>
+      (a.dupGroup - b.dupGroup) || a.normName.localeCompare(b.normName, 'ko')
+    );
+  }
+
+  const tbody   = document.getElementById('tbody');
+  const emptyBox = document.getElementById('emptyBox');
+
+  if (!list.length) {
+    tbody.innerHTML = '';
+    emptyBox.style.display = 'block';
+    return;
+  }
+  emptyBox.style.display = 'none';
+
+  const rows = [];
+  let lastGrp = -1;
+  let num = 0;
+
+  list.forEach(d => {
+    const isDup = (d.dupGroup !== null);
+
+    // 그룹 구분선
+    if (dupOnly && isDup && d.dupGroup !== lastGrp) {
+      const cnt = list.filter(x => x.dupGroup === d.dupGroup).length;
+      rows.push(`<tr class="gsep"><td colspan="8">▸ 중복 그룹 ${d.dupGroup} (${cnt}건)</td></tr>`);
+      lastGrp = d.dupGroup;
+    }
+
+    num++;
+
+    // 상태 뱃지
+    let statusHTML;
+    if (isDup) {
+      statusHTML = `<span class="badge b-dup">중복</span> <span class="badge b-grp">G${d.dupGroup}</span>`;
+      if (d.reasons.length) {
+        statusHTML += '<div class="badge-row">'
+          + d.reasons.map(w => `<span class="badge ${w.startsWith('유사') ? 'b-sim' : 'b-why'}">${w}</span>`).join('')
+          + '</div>';
+      }
+    } else {
+      statusHTML = `<span class="badge b-ok">정상</span>`;
+    }
+
+    // 현장명
+    const nameText = hl(d.displayName, q) || `<span style="color:#9ca3af;font-weight:400">현장명 없음</span>`;
+    const issuerHTML = (d.issuer && d.issuer !== d.displayName)
+      ? `<span class="issuer">${hl(d.issuer, q)}</span>` : '';
+
+    // 금액
+    let amtHTML = '-';
+    if (d.amt) {
+      const main = Math.round(d.amt).toLocaleString() + '원';
+      const dc   = (Math.round(d.amt * 0.5 / 1e8 * 10) / 10).toLocaleString() + '억 (DC50%)';
+      amtHTML = `<span class="amt">${main}</span><span class="amt-dc">${dc}</span>`;
+    }
+
+    // 주소
+    const addrHTML = d.addr
+      ? `<span class="addr">${hl(d.addr, q)}</span>`
+      : `<span style="color:#d1d5db">-</span>`;
+
+    const rc = isDup ? ' class="dup"' : '';
+    const nc = isDup ? ' class="nc"' : '';
+
+    rows.push(`<tr${rc}>
+      <td style="color:#9ca3af;font-size:12px">${num}</td>
+      <td>${statusHTML}</td>
+      <td${nc}><span class="nm">${nameText}</span>${issuerHTML}</td>
+      <td>${addrHTML}</td>
+      <td>${amtHTML}</td>
+      <td style="font-size:13px">${hl(d.marketer, q) || '-'}</td>
+      <td style="font-size:12px;color:#6b7280">${hl(d.owner, q) || '-'}</td>
+      <td style="font-size:12px;color:#6b7280">${d.year ? d.year + '.' : ''}${d.month ? d.month + '월' : '-'}</td>
+    </tr>`);
+  });
+
+  tbody.innerHTML = rows.join('');
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// 엑셀 내보내기
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+function doExport() {
+  const dups = DATA.filter(d => d.dupGroup !== null)
+    .sort((a, b) => (a.dupGroup - b.dupGroup) || a.normName.localeCompare(b.normName, 'ko'));
+  if (!dups.length) { alert('중복 현장이 없습니다.'); return; }
+
+  const sheet = [['중복그룹','현장명','주소','설계반영금액(원)','DC50%금액(원)','마케터','담당','생성년월','시행사','중복사유']];
+  dups.forEach(d => sheet.push([
+    'G' + d.dupGroup,
+    d.displayName,
+    d.addr,
+    d.amt || '',
+    d.amt ? Math.round(d.amt * 0.5) : '',
+    d.marketer, d.owner,
+    d.year + (d.month ? '.' + d.month : ''),
+    d.issuer,
+    d.reasons.join(', ')
+  ]));
+
+  const wb = XLSX.utils.book_new();
+  const ws = XLSX.utils.aoa_to_sheet(sheet);
+  ws['!cols'] = [8,32,30,20,20,12,12,10,20,15].map(w => ({ wch: w }));
+  XLSX.utils.book_append_sheet(wb, ws, '중복현장목록');
+  const today = new Date().toLocaleDateString('ko').replace(/\.\s*/g,'-').replace(/-$/,'');
+  XLSX.writeFile(wb, '중복현장_' + today + '.xlsx');
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// 초기화
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+function doReset() {
+  DATA = [];
+  dz.style.display = 'block';
+  document.getElementById('fb').style.display       = 'none';
+  document.getElementById('statsBox').style.display = 'none';
+  document.getElementById('appBox').style.display   = 'none';
+  document.getElementById('fi').value = '';
+}
+</script>
+
+
+</body></html>
